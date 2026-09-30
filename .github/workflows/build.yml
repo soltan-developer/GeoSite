@@ -47,6 +47,9 @@ jobs:
       - name: Merge and normalize sources
         run: python3 scripts/build.py
 
+      - name: Build 10k coverage test corpus
+        run: python3 scripts/build_test_corpus.py
+
       - name: Get pinned GeoSite compiler
         run: |
           git clone --filter=blob:none https://github.com/v2fly/domain-list-community.git /tmp/domain-list-community
@@ -71,7 +74,7 @@ jobs:
       - name: Checksums
         run: |
           cd dist
-          sha256sum geosite_*.dat adult.txt gambling.txt nsfw-all.txt stats.json > SHA256SUMS
+          sha256sum geosite_*.dat adult.txt gambling.txt nsfw-all.txt stats.json adult-challenge-10000.txt adult-control-10000.txt adult-test-meta.json > SHA256SUMS
 
       - name: Publish stable release
         if: github.ref == 'refs/heads/main'
@@ -84,4 +87,4 @@ jobs:
             gh release edit latest --repo "$GITHUB_REPOSITORY" --title "Latest GeoSite" --notes-file dist/release-notes.md
           fi
 
-          gh release upload latest dist/geosite_custom.dat dist/geosite_nsfw.dat dist/geosite_adult.dat dist/geosite_gambling.dat dist/adult.txt dist/gambling.txt dist/nsfw-all.txt dist/stats.json dist/SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber
+          gh release upload latest dist/geosite_custom.dat dist/geosite_nsfw.dat dist/geosite_adult.dat dist/geosite_gambling.dat dist/adult.txt dist/gambling.txt dist/nsfw-all.txt dist/stats.json dist/adult-challenge-10000.txt dist/adult-control-10000.txt dist/adult-test-meta.json dist/SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber
