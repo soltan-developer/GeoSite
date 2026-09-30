@@ -11,7 +11,8 @@ on:
       - ".github/workflows/build.yml"
       - "scripts/**"
       - "lists/**"
-      - "sources.json"\n      - "datprofile.json"
+      - "sources.json"
+      - "datprofile.json"
       - "SOURCES.md"
 
 permissions:
@@ -51,17 +52,20 @@ jobs:
           git clone --filter=blob:none https://github.com/v2fly/domain-list-community.git /tmp/domain-list-community
           git -C /tmp/domain-list-community checkout "$DLC_REF"
 
-      - name: Compile geosite_custom.dat
+      - name: Compile GeoSite assets
         run: |
           cd /tmp/domain-list-community
-          go run .             --datapath="$GITHUB_WORKSPACE/build/data"             --outputname=geosite_custom.dat             --outputdir="$GITHUB_WORKSPACE/dist"
+          go run . --datapath="$GITHUB_WORKSPACE/build/data" --datprofile="$GITHUB_WORKSPACE/datprofile.json" --outputdir="$GITHUB_WORKSPACE/dist"
 
       - name: Validate generated DAT
         run: |
           test -s dist/geosite_custom.dat
+          test -s dist/geosite_nsfw.dat
+          test -s dist/geosite_adult.dat
+          test -s dist/geosite_gambling.dat
           mkdir -p build/dump
           cd /tmp/domain-list-community
-          go run ./cmd/datdump/main.go             --inputdata="$GITHUB_WORKSPACE/dist/geosite_custom.dat"             --outputdir="$GITHUB_WORKSPACE/build/dump"             --exportlists=_all_
+          go run ./cmd/datdump/main.go --inputdata="$GITHUB_WORKSPACE/dist/geosite_custom.dat" --outputdir="$GITHUB_WORKSPACE/build/dump" --exportlists=_all_
           test -n "$(find "$GITHUB_WORKSPACE/build/dump" -type f -size +0c -print -quit)"
 
       - name: Checksums
@@ -75,9 +79,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if ! gh release view latest --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create latest               --repo "$GITHUB_REPOSITORY"               --title "Latest GeoSite"               --notes-file dist/release-notes.md
+            gh release create latest --repo "$GITHUB_REPOSITORY" --title "Latest GeoSite" --notes-file dist/release-notes.md
           else
-            gh release edit latest               --repo "$GITHUB_REPOSITORY"               --title "Latest GeoSite"               --notes-file dist/release-notes.md
+            gh release edit latest --repo "$GITHUB_REPOSITORY" --title "Latest GeoSite" --notes-file dist/release-notes.md
           fi
 
-          gh release upload latest             dist/geosite_custom.dat             dist/adult.txt             dist/gambling.txt             dist/nsfw-all.txt             dist/stats.json             dist/SHA256SUMS             --repo "$GITHUB_REPOSITORY"             --clobber
+          gh release upload latest dist/geosite_custom.dat dist/geosite_nsfw.dat dist/geosite_adult.dat dist/geosite_gambling.dat dist/adult.txt dist/gambling.txt dist/nsfw-all.txt dist/stats.json dist/SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber
