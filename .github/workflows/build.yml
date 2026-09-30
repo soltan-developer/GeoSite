@@ -11,7 +11,7 @@ on:
       - ".github/workflows/build.yml"
       - "scripts/**"
       - "lists/**"
-      - "sources.json"
+      - "sources.json"\n      - "datprofile.json"
       - "SOURCES.md"
 
 permissions:
@@ -67,7 +67,7 @@ jobs:
       - name: Checksums
         run: |
           cd dist
-          sha256sum geosite_custom.dat adult.txt gambling.txt nsfw-all.txt stats.json > SHA256SUMS
+          sha256sum geosite_*.dat adult.txt gambling.txt nsfw-all.txt stats.json > SHA256SUMS
 
       - name: Publish stable release
         if: github.ref == 'refs/heads/main'

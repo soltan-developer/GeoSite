@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-URL="${URL:-https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_custom.dat}"
+URL="${URL:-https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_nsfw.dat}"
 SUMS_URL="${SUMS_URL:-https://github.com/soltan-developer/GeoSite/releases/download/latest/SHA256SUMS}"
 ALIAS="${ALIAS:-family}"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/sbin}"
@@ -46,7 +46,7 @@ trap cleanup EXIT
 curl -fL --retry 3 --connect-timeout 15 --max-time 300 "$URL" -o "$TMP"
 curl -fL --retry 3 --connect-timeout 15 --max-time 60 "$SUMS_URL" -o "${TMP}.sums"
 
-expected=$(awk '$2=="geosite_custom.dat"{print $1; exit}' "${TMP}.sums")
+expected=$(awk '$2=="geosite_nsfw.dat"{print $1; exit}' "${TMP}.sums")
 actual=$(sha256sum "$TMP" | awk '{print $1}')
 [[ -n "$expected" && "$expected" == "$actual" ]] || {
   echo "SHA256 verification failed" >&2

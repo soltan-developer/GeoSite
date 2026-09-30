@@ -5,14 +5,14 @@ Daily-built Xray/3x-ui GeoSite database for adult and gambling filtering.
 ## Stable download
 
 ~~~
-https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_custom.dat
+https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_nsfw.dat
 ~~~
 
 The release is rebuilt every day by GitHub Actions and can also be rebuilt manually with Run workflow.
 
 ## Categories
 
-The generated geosite_custom.dat contains:
+The recommended compact geosite_nsfw.dat contains only nsfw-all. The full geosite_custom.dat contains:
 
 - adult — merged adult-content sources plus lists/persian-adult.txt
 - gambling — merged gambling sources plus lists/persian-gambling.txt
@@ -27,11 +27,11 @@ Every domain is normalized, IDN-converted, deduplicated and redundant child doma
 3x-ui supports custom GeoSite DAT URLs. Use:
 
 ~~~
-URL:   https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_custom.dat
+URL:   https://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_nsfw.dat
 Alias: family
 ~~~
 
-With alias family, 3x-ui stores the file as geosite_family.dat. Routing examples:
+With the recommended compact URL and alias family, 3x-ui stores the file as geosite_family.dat. Use:\n\n~~~\next:geosite_family.dat:nsfw-all\n~~~\n\nIf you need separate adult/gambling/custom-Persian tags, use the full asset instead:\n\n~~~\nhttps://github.com/soltan-developer/GeoSite/releases/download/latest/geosite_custom.dat\n~~~\n\nFull-file routing examples:
 
 ~~~
 ext:geosite_family.dat:adult
