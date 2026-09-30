@@ -1,8 +1,8 @@
 [
   {
     "name": "geosite_custom.dat",
-    "mode": "allowlist",
-    "lists": ["adult", "gambling", "persian-adult", "persian-gambling", "nsfw-all"]
+    "mode": "all",
+    "lists": []
   },
   {
     "name": "geosite_nsfw.dat",
