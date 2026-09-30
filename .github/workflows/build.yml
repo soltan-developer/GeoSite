@@ -1,0 +1,83 @@
+name: Build GeoSite
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build.yml"
+      - "scripts/**"
+      - "lists/**"
+      - "sources.json"
+      - "SOURCES.md"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: geosite-build
+  cancel-in-progress: true
+
+env:
+  DLC_REF: "2d71342eea1720da57261b55663c9d55619e9b1c"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Merge and normalize sources
+        run: python3 scripts/build.py
+
+      - name: Get pinned GeoSite compiler
+        run: |
+          git clone --filter=blob:none https://github.com/v2fly/domain-list-community.git /tmp/domain-list-community
+          git -C /tmp/domain-list-community checkout "$DLC_REF"
+
+      - name: Compile geosite_custom.dat
+        run: |
+          cd /tmp/domain-list-community
+          go run .             --datapath="$GITHUB_WORKSPACE/build/data"             --outputname=geosite_custom.dat             --outputdir="$GITHUB_WORKSPACE/dist"
+
+      - name: Validate generated DAT
+        run: |
+          test -s dist/geosite_custom.dat
+          mkdir -p build/dump
+          cd /tmp/domain-list-community
+          go run ./cmd/datdump/main.go             --inputdata="$GITHUB_WORKSPACE/dist/geosite_custom.dat"             --outputdir="$GITHUB_WORKSPACE/build/dump"             --exportlists=_all_
+          test -n "$(find "$GITHUB_WORKSPACE/build/dump" -type f -size +0c -print -quit)"
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum geosite_custom.dat adult.txt gambling.txt nsfw-all.txt stats.json > SHA256SUMS
+
+      - name: Publish stable release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view latest --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create latest               --repo "$GITHUB_REPOSITORY"               --title "Latest GeoSite"               --notes-file dist/release-notes.md
+          else
+            gh release edit latest               --repo "$GITHUB_REPOSITORY"               --title "Latest GeoSite"               --notes-file dist/release-notes.md
+          fi
+
+          gh release upload latest             dist/geosite_custom.dat             dist/adult.txt             dist/gambling.txt             dist/nsfw-all.txt             dist/stats.json             dist/SHA256SUMS             --repo "$GITHUB_REPOSITORY"             --clobber

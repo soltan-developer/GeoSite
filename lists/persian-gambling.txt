@@ -1,0 +1,5 @@
+# One domain per line.
+# This file is merged into both persian-gambling and gambling.
+# Add Persian betting/casino mirrors here as you discover them.
+# Example:
+# example-betting-domain.tld

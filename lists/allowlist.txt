@@ -1,0 +1,3 @@
+# One domain per line.
+# Allowlisted domains and their subdomains are removed from every generated block category.
+# Use this only for verified false positives.

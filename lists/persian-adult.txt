@@ -1,0 +1,4 @@
+# One domain per line.
+# This file is merged into both persian-adult and adult.
+# Example:
+# example-adult-domain.tld

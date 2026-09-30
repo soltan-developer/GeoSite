@@ -1,0 +1,44 @@
+{
+  "groups": {
+    "adult": [
+      {
+        "name": "HaGeZi NSFW",
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/nsfw-onlydomains.txt",
+        "format": "domains",
+        "license": "GPL-3.0",
+        "required": true
+      },
+      {
+        "name": "Block List Project Porn",
+        "url": "https://blocklistproject.github.io/Lists/alt-version/porn-nl.txt",
+        "format": "domains",
+        "license": "Unlicense",
+        "required": true
+      }
+    ],
+    "gambling": [
+      {
+        "name": "HaGeZi Gambling Full",
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling-onlydomains.txt",
+        "format": "domains",
+        "license": "GPL-3.0",
+        "required": true
+      }
+    ],
+    "nsfw_all_extra": [
+      {
+        "name": "StevenBlack gambling-porn-only",
+        "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/gambling-porn-only/hosts",
+        "format": "hosts",
+        "license": "MIT",
+        "required": true,
+        "note": "This is the same combined upstream family used by Chocolate4U's NSFW generator."
+      }
+    ]
+  },
+  "thresholds": {
+    "adult": 50000,
+    "gambling": 10000,
+    "nsfw-all": 60000
+  }
+}
